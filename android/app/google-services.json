@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "117411889492",
+    "project_id": "arater-e2863",
+    "storage_bucket": "arater-e2863.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117411889492:android:cbffba5daf2ead326108c1",
+        "android_client_info": {
+          "package_name": "com.example.ifms_form"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117411889492-7tbgepfhbu9403p2ce6iml750b1ffu7c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYwdR0-0LmWPMC8gCF-DFrqFFI5Zh7xKc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117411889492-7tbgepfhbu9403p2ce6iml750b1ffu7c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
