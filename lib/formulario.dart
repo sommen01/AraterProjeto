@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,7 +24,10 @@ class _FormularioState extends State<Formulario> {
   }
 
   @override
-  File _image;
+  double val = 0;
+  CollectionReference imgRef;
+
+  List<File> _image = List<File>();
   final picker = ImagePicker();
   Position _currentPosition;
   String _currentAddress;
@@ -312,20 +316,45 @@ class _FormularioState extends State<Formulario> {
   }
 
   Future uploadFile() async {
-    Future<String> url;
+    int i = 1;
     FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref =
-        storage.ref().child("$_currentPosition" + DateTime.now().toString());
-    UploadTask uploadTask = ref.putFile(_image);
-    await uploadTask.whenComplete(() {
-      url = ref.getDownloadURL();
-    }).catchError((onError) {
-      print(onError);
-    });
-    return url;
+    Future<String> url;
+    for (var img in _image) {
+      setState(() {
+        val = i / _image.length;
+      });
+      Reference ref =
+          storage.ref().child("$_currentPosition" + DateTime.now().toString());
+      await ref.putFile(img).whenComplete(() async {
+        await ref.getDownloadURL().then((value) {
+          url = ref.getDownloadURL();
+          imgRef.add({'url': value});
+
+          i++;
+        });
+      });
+      return imgRef;
+    }
   }
 
-  Widget displaySelectedFile(File file) {
+  // Future uploadFile() async {
+  //   for (var img in _image) {
+  // Future<String> url;
+  //     FirebaseStorage storage = FirebaseStorage.instance;
+
+  //     Reference ref =
+  //         storage.ref().child("$_currentPosition" + DateTime.now().toString());
+  //     UploadTask uploadTask = ref.putFile(img);
+  // await uploadTask.whenComplete(() {
+  //   url = ref.getDownloadURL();
+  // }).catchError((onError) {
+  //   print(onError);
+  // });
+  //   }
+  //   // return url;
+  // }
+
+  Widget displaySelectedFile(List<File> file) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.20,
       width: MediaQuery.of(context).size.width * 0.35,
@@ -340,13 +369,19 @@ class _FormularioState extends State<Formulario> {
                   child: Text('Aguardando foto...',
                       style: TextStyle(color: Colors.white, fontSize: 18))),
             )
-          : new Container(
-              width: 300.0,
-              height: 300.0,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      fit: BoxFit.fill, image: FileImage(file)))),
+          : new ListView.builder(
+              itemCount: _image.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                    title: Container(
+                        width: 300.0,
+                        height: 300.0,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: FileImage(file[index])))));
+              },
+            ),
     );
   }
 
@@ -361,21 +396,36 @@ class _FormularioState extends State<Formulario> {
       return;
     } else {
       setState(() {
-        _image = File(pickedFile.path);
+        _image.add(File(pickedFile?.path));
       });
+      if (pickedFile.path == null) retrieveLostData();
     }
   }
 
-  Future cameraImageGaleria() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    if (pickedFile == null) {
+  Future<void> retrieveLostData() async {
+    final LostData response = await picker.getLostData();
+    if (response.isEmpty) {
       return;
-    } else {
+    }
+    if (response.file != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _image.add(File(response.file.path));
       });
+    } else {
+      print(response.file);
     }
   }
+
+  // Future cameraImageGaleria() async {
+  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  //   if (pickedFile == null) {
+  //     return;
+  //   } else {
+  //     setState(() {
+  //       _image.add(File(pickedFile.path));
+  //     });
+  //   }
+  // }
 
   Widget _buildTextField() {
     final maxLines = 5;
