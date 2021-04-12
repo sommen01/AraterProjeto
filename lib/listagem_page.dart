@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:full_screen_image/full_screen_image.dart';
 import 'package:ifms_form/formulario.dart';
 import 'package:ifms_form/user_model.dart';
 import 'package:meet_network_image/meet_network_image.dart';
@@ -66,7 +67,7 @@ class _ListagemState extends State<Listagem> {
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 32, right: 32),
                         child: Text(
-                          'ordens de serviço',
+                          'Ordens de Serviços',
                           style: TextStyle(color: Colors.white, fontSize: 22),
                         ),
                       ),
@@ -107,6 +108,11 @@ class _ListagemState extends State<Listagem> {
                             return ListView(
                                 children: documents
                                     .map((data) => Container(
+                                          margin: const EdgeInsets.all(15.0),
+                                          padding: const EdgeInsets.all(3.0),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.green)),
                                           child: GestureDetector(
                                             onTap: () {
                                               showAlertDialog(
@@ -119,14 +125,20 @@ class _ListagemState extends State<Listagem> {
                                               );
                                             },
                                             child: ListTile(
-                                              trailing: Text(
-                                                  '${data['numberCalled']}'),
+                                              leading: Icon(
+                                                Icons.add,
+                                                color: Colors.green,
+                                              ),
+                                              trailing: Text(data[
+                                                          'coordinates'] ==
+                                                      'null'
+                                                  ? ''
+                                                  : '${data['coordinates']}'),
                                               title: Text(
-                                                  '${data['coordinates']}'),
+                                                  '${data['numberCalled']}'),
                                               subtitle: Row(
                                                 children: [
-                                                  Text(
-                                                      '${data['description']}'),
+                                                  Text('${data['date']}'),
                                                 ],
                                               ),
                                             ),
@@ -146,45 +158,109 @@ class _ListagemState extends State<Listagem> {
 
   showAlertDialog(BuildContext context, String date, String coordinates,
       String message, String image, String time) {
-    // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text('Ok'),
+      child: Text(
+        'Ok',
+        style: TextStyle(color: Colors.green),
+      ),
       onPressed: () {
         Navigator.pop(context);
       },
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Row(
-        children: [
-          Text(date),
-          Spacer(),
-          Text(time),
-        ],
-      ),
+      insetPadding: EdgeInsets.symmetric(vertical: 135),
       content: Column(
         children: [
-          MeetNetworkImage(
-            imageUrl: image,
-            height: MediaQuery.of(context).size.height / 2.5,
-            loadingBuilder: (context) => Center(
-              child: CircularProgressIndicator(),
-            ),
-            errorBuilder: (context, e) => Center(
-              child: Text('Erro ao processar imagem!'),
+          FullScreenWidget(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: MeetNetworkImage(
+                imageUrl: image,
+                height: MediaQuery.of(context).size.height / 2.2,
+                loadingBuilder: (context) => Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorBuilder: (context, e) => Center(
+                  child: Text('Erro ao processar imagem!'),
+                ),
+              ),
+
+              // Image.asset(
+              //   "assets/image2.jpg",
+              //   fit: BoxFit.cover,
+              // ),
             ),
           ),
-          Text('Descrição : $message'),
-          Text('Coordenadas : $coordinates'),
+
+          SizedBox(
+            height: 30,
+          ),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Data',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w200,
+                      )),
+                  Text('$date'),
+                ],
+              ),
+              Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Hora',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w200,
+                      )),
+                  Text('$time'),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Descrição',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w200,
+                      )),
+                  Text('$message'),
+                ],
+              ),
+              Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Coordenadas',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w200,
+                      )),
+                  Text(
+                    '$coordinates' == 'null' ? '' : '$coordinates',
+                    overflow: TextOverflow.ellipsis,
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.justify,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // Text('Coordenadas : $coordinates'),
         ],
       ),
       actions: [
         cancelButton,
       ],
     );
-
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

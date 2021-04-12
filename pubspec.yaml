@@ -36,6 +36,7 @@ dependencies:
   meet_network_image: ^0.1.2
   permission_handler: ^5.0.1+1
   image_cropper:
+  full_screen_image:
 
 
 dev_dependencies:
