@@ -157,7 +157,7 @@ class _ListagemState extends State<Listagem> {
   }
 
   showAlertDialog(BuildContext context, String date, String coordinates,
-      String message, String image, String time) {
+      String message, var image, String time) {
     Widget cancelButton = TextButton(
       child: Text(
         'Ok',
@@ -169,93 +169,99 @@ class _ListagemState extends State<Listagem> {
     );
 
     AlertDialog alert = AlertDialog(
-      insetPadding: EdgeInsets.symmetric(vertical: 135),
-      content: Column(
-        children: [
-          FullScreenWidget(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: MeetNetworkImage(
-                imageUrl: image,
-                height: MediaQuery.of(context).size.height / 2.2,
-                loadingBuilder: (context) => Center(
-                  child: CircularProgressIndicator(),
-                ),
-                errorBuilder: (context, e) => Center(
-                  child: Text('Erro ao processar imagem!'),
-                ),
+      insetPadding: EdgeInsets.symmetric(vertical: 10),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: Flexible(
+          child: Column(
+            children: [
+              Flexible(
+                flex: 4,
+                child: GridView.builder(
+                    itemCount: image.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Container(
+                              decoration: new BoxDecoration(
+                                  image: new DecorationImage(
+                                      image: new NetworkImage(image[index]),
+                                      fit: BoxFit.cover))));
+                    }),
               ),
 
-              // Image.asset(
-              //   "assets/image2.jpg",
-              //   fit: BoxFit.cover,
-              // ),
-            ),
-          ),
+              SizedBox(
+                height: 30,
+              ),
+              Flexible(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Data',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                            )),
+                        Text('$date'),
+                      ],
+                    ),
+                    Spacer(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Hora',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                            )),
+                        Text('$time'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Coordenadas',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                            )),
+                        Flexible(
+                          child: Text(
+                            '$coordinates' == 'null' ? '' : '$coordinates',
+                            overflow: TextOverflow.ellipsis,
+                            textDirection: TextDirection.rtl,
+                            textAlign: TextAlign.justify,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
 
-          SizedBox(
-            height: 30,
-          ),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Data',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w200,
-                      )),
-                  Text('$date'),
-                ],
+              Flexible(
+                child: Text('Descrição',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w200,
+                    )),
               ),
-              Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Hora',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w200,
-                      )),
-                  Text('$time'),
-                ],
-              ),
+              Flexible(
+                  child: Text(
+                      'djnfjksdbfksdbfkjsdbfbsdfsdbfdsfsldjbfljsdbfjlblsjdfbjlsdbfljsdbfjlbsdlfbsdlfblsdbfljsdbfjlbjoldbfjldblfjsdblfjbsdjlfbsdjlfbljsdfbljb')),
+              // Text('Coordenadas : $coordinates'),
             ],
           ),
-          SizedBox(
-            height: 30,
-          ),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Descrição',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w200,
-                      )),
-                  Text('$message'),
-                ],
-              ),
-              Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Coordenadas',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w200,
-                      )),
-                  Text(
-                    '$coordinates' == 'null' ? '' : '$coordinates',
-                    overflow: TextOverflow.ellipsis,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.justify,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          // Text('Coordenadas : $coordinates'),
-        ],
+        ),
       ),
       actions: [
         cancelButton,

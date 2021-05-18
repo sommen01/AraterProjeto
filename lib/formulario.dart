@@ -38,6 +38,7 @@ class _FormularioState extends State<Formulario> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _numberCalled = TextEditingController();
   final __description = TextEditingController();
+  List<String> urlList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +46,7 @@ class _FormularioState extends State<Formulario> {
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         actions: <Widget>[
           Row(
             children: [
@@ -202,27 +204,31 @@ class _FormularioState extends State<Formulario> {
                         Spacer(),
                         GestureDetector(
                           onTap: () async {
-                            if (time == null ||
-                                date == null ||
-                                _currentPosition == null) {
-                              _getDateNow();
-                              _getCurrentLocation();
-                            }
-                            await uploadFile();
+                            if (urlList == null || urlList.length == 0) {
+                              await uploadFile();
+                            } else {
+                              if (time == null ||
+                                  date == null ||
+                                  _currentPosition == null) {
+                                _getDateNow();
+                                _getCurrentLocation();
+                              }
 
-                            formData = {
-                              "name": await model.userData["name"],
-                              "image": uploadFile,
-                              "coordinates": await _currentPosition.toString(),
-                              "time": time,
-                              "date": date,
-                              "description": __description.text,
-                              "numberCalled": _numberCalled.text,
-                            };
-                            model.saveCalled(
-                                formData: formData,
-                                onSuccess: _onSuccess,
-                                onFail: _onFail);
+                              formData = {
+                                "name": await model.userData["name"],
+                                "image": await urlList,
+                                "coordinates":
+                                    await _currentPosition.toString(),
+                                "time": time,
+                                "date": date,
+                                "description": __description.text,
+                                "numberCalled": _numberCalled.text,
+                              };
+                              model.saveCalled(
+                                  formData: formData,
+                                  onSuccess: _onSuccess,
+                                  onFail: _onFail);
+                            }
                           },
                           child: Container(
                             height: 45,
@@ -267,6 +273,7 @@ class _FormularioState extends State<Formulario> {
     time = null;
     _currentPosition = null;
     _image = [];
+    urlList = [];
   }
 
   void _onFail() {
@@ -315,8 +322,6 @@ class _FormularioState extends State<Formulario> {
   }
 
   uploadFile() async {
-    List<String> urlList = [];
-
     var url;
     for (int i = 0; i < _image.length; i++) {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -326,12 +331,15 @@ class _FormularioState extends State<Formulario> {
       uploadTask.whenComplete(() async {
         try {
           url = await ref.getDownloadURL();
+          await urlList.add(url.toString());
+          i++;
+          print(urlList);
         } catch (onError) {
           print("Error");
         }
-        urlList.insert(i, url.toString());
       });
     }
+
     return urlList;
   }
 
