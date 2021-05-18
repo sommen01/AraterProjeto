@@ -25,7 +25,7 @@ class _FormularioState extends State<Formulario> {
 
   @override
   double val = 0;
-  CollectionReference imgRef;
+  Future<String> url;
 
   List<File> _image = List<File>();
   final picker = ImagePicker();
@@ -38,6 +38,7 @@ class _FormularioState extends State<Formulario> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _numberCalled = TextEditingController();
   final __description = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,9 +104,6 @@ class _FormularioState extends State<Formulario> {
                             child: Column(
                               children: [
                                 displaySelectedFile(_image),
-                                SizedBox(
-                                  height: 10,
-                                ),
                                 Icon(
                                   Icons.photo_camera_outlined,
                                   size: 40,
@@ -115,12 +113,11 @@ class _FormularioState extends State<Formulario> {
                             ),
                           ),
                         ),
-                        Spacer(),
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(bottom: 32, right: 32),
+                                const EdgeInsets.only(bottom: 10, right: 32),
                             child: Text(
                               'FORMULÁRIO DE DADOS',
                               style:
@@ -211,9 +208,11 @@ class _FormularioState extends State<Formulario> {
                               _getDateNow();
                               _getCurrentLocation();
                             }
+                            await uploadFile();
+
                             formData = {
                               "name": await model.userData["name"],
-                              "image": await uploadFile(),
+                              "image": uploadFile,
                               "coordinates": await _currentPosition.toString(),
                               "time": time,
                               "date": date,
@@ -267,7 +266,7 @@ class _FormularioState extends State<Formulario> {
     __description.clear();
     time = null;
     _currentPosition = null;
-    _image = null;
+    _image = [];
   }
 
   void _onFail() {
@@ -315,49 +314,31 @@ class _FormularioState extends State<Formulario> {
     }
   }
 
-  Future uploadFile() async {
-    int i = 1;
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Future<String> url;
-    for (var img in _image) {
-      setState(() {
-        val = i / _image.length;
-      });
+  uploadFile() async {
+    List<String> urlList = [];
+
+    var url;
+    for (int i = 0; i < _image.length; i++) {
+      FirebaseStorage storage = FirebaseStorage.instance;
       Reference ref =
-          storage.ref().child("$_currentPosition" + DateTime.now().toString());
-      await ref.putFile(img).whenComplete(() async {
-        await ref.getDownloadURL().then((value) {
-          url = ref.getDownloadURL();
-          imgRef.add({'url': value});
-
-          i++;
-        });
+          storage.ref().child(DateTime.now().millisecond.toString());
+      UploadTask uploadTask = ref.putFile(_image[i]);
+      uploadTask.whenComplete(() async {
+        try {
+          url = await ref.getDownloadURL();
+        } catch (onError) {
+          print("Error");
+        }
+        urlList.insert(i, url.toString());
       });
-      return imgRef;
     }
+    return urlList;
   }
-
-  // Future uploadFile() async {
-  //   for (var img in _image) {
-  // Future<String> url;
-  //     FirebaseStorage storage = FirebaseStorage.instance;
-
-  //     Reference ref =
-  //         storage.ref().child("$_currentPosition" + DateTime.now().toString());
-  //     UploadTask uploadTask = ref.putFile(img);
-  // await uploadTask.whenComplete(() {
-  //   url = ref.getDownloadURL();
-  // }).catchError((onError) {
-  //   print(onError);
-  // });
-  //   }
-  //   // return url;
-  // }
 
   Widget displaySelectedFile(List<File> file) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.20,
-      width: MediaQuery.of(context).size.width * 0.35,
+      height: MediaQuery.of(context).size.height * 0.25,
+      width: MediaQuery.of(context).size.width * 1.0,
       child: file == null
           ? new Container(
               width: 300.0,
@@ -369,18 +350,35 @@ class _FormularioState extends State<Formulario> {
                   child: Text('Aguardando foto...',
                       style: TextStyle(color: Colors.white, fontSize: 18))),
             )
-          : new ListView.builder(
-              itemCount: _image.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                    title: Container(
-                        width: 300.0,
-                        height: 300.0,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: FileImage(file[index])))));
-              },
+          : Container(
+              width: double.infinity,
+              height: 200,
+              child: new ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _image.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onLongPress: () {
+                        setState(() {
+                          _image.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                          width: 300.0,
+                          height: 300.0,
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0) //
+                                      ),
+                              image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: FileImage(file[index])))),
+                    ),
+                  );
+                },
+              ),
             ),
     );
   }
