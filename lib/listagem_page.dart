@@ -172,95 +172,93 @@ class _ListagemState extends State<Listagem> {
       insetPadding: EdgeInsets.symmetric(vertical: 10),
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
-        child: Flexible(
-          child: Column(
-            children: [
-              Flexible(
-                flex: 4,
-                child: GridView.builder(
-                    itemCount: image.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Container(
-                              decoration: new BoxDecoration(
-                                  image: new DecorationImage(
-                                      image: new NetworkImage(image[index]),
-                                      fit: BoxFit.cover))));
-                    }),
-              ),
+        child: Column(
+          children: [
+            Flexible(
+              flex: 4,
+              child: GridView.builder(
+                  itemCount: image.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Container(
+                            decoration: new BoxDecoration(
+                                image: new DecorationImage(
+                                    image: new NetworkImage(image[index]),
+                                    fit: BoxFit.cover))));
+                  }),
+            ),
 
-              SizedBox(
-                height: 30,
+            SizedBox(
+              height: 30,
+            ),
+            Flexible(
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Data',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w200,
+                          )),
+                      Text('$date'),
+                    ],
+                  ),
+                  Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Hora',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w200,
+                          )),
+                      Text('$time'),
+                    ],
+                  ),
+                ],
               ),
-              Flexible(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Data',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w200,
-                            )),
-                        Text('$date'),
-                      ],
-                    ),
-                    Spacer(),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Hora',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w200,
-                            )),
-                        Text('$time'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Coordenadas',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w200,
-                            )),
-                        Flexible(
-                          child: Text(
-                            '$coordinates' == 'null' ? '' : '$coordinates',
-                            overflow: TextOverflow.ellipsis,
-                            textDirection: TextDirection.rtl,
-                            textAlign: TextAlign.justify,
-                          ),
+            ),
+            Flexible(
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Coordenadas',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w200,
+                          )),
+                      Flexible(
+                        child: Text(
+                          '$coordinates' == 'null' ? '' : '$coordinates',
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.justify,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 30,
-              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
 
-              Flexible(
-                child: Text('Descrição',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w200,
-                    )),
-              ),
-              Flexible(
-                  child: Text(
-                      'djnfjksdbfksdbfkjsdbfbsdfsdbfdsfsldjbfljsdbfjlblsjdfbjlsdbfljsdbfjlbsdlfbsdlfblsdbfljsdbfjlbjoldbfjldblfjsdblfjbsdjlfbsdjlfbljsdfbljb')),
-              // Text('Coordenadas : $coordinates'),
-            ],
-          ),
+            Flexible(
+              child: Text('Descrição',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w200,
+                  )),
+            ),
+            Flexible(
+                child: Text(
+                    'djnfjksdbfksdbfkjsdbfbsdfsdbfdsfsldjbfljsdbfjlblsjdfbjlsdbfljsdbfjlbsdlfbsdlfblsdbfljsdbfjlbjoldbfjldblfjsdblfjbsdjlfbsdjlfbljsdfbljb')),
+            // Text('Coordenadas : $coordinates'),
+          ],
         ),
       ),
       actions: [
