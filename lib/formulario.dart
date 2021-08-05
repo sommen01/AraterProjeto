@@ -131,7 +131,7 @@ class _FormularioState extends State<Formulario> {
                     ),
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height / 2,
+                    height: MediaQuery.of(context).size.height * 0.60,
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.only(top: 30),
                     child: Column(
@@ -160,12 +160,12 @@ class _FormularioState extends State<Formulario> {
                               )),
                         ),
                         SizedBox(
-                          height: 35,
+                          height: MediaQuery.of(context).size.height * 0.025,
                         ),
 
                         Container(
                           width: MediaQuery.of(context).size.width / 1,
-                          height: MediaQuery.of(context).size.height / 3.7,
+                          height: MediaQuery.of(context).size.height * 0.3,
                           padding: EdgeInsets.only(
                               top: 4, left: 16, right: 16, bottom: 4),
                           decoration: BoxDecoration(
@@ -190,18 +190,10 @@ class _FormularioState extends State<Formulario> {
                             ),
                           ),
                         ),
-                        // Container(child: _buildTextField()),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16, right: 32),
-                            child: Text(
-                              '',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.025,
                         ),
-                        Spacer(),
+
                         GestureDetector(
                           onTap: () async {
                             if (urlList == null || urlList.length == 0) {
@@ -231,7 +223,7 @@ class _FormularioState extends State<Formulario> {
                             }
                           },
                           child: Container(
-                            height: 45,
+                            height: MediaQuery.of(context).size.height * 0.08,
                             width: MediaQuery.of(context).size.width / 1.2,
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
@@ -246,6 +238,17 @@ class _FormularioState extends State<Formulario> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
                               ),
+                            ),
+                          ),
+                        ),
+                        // Container(child: _buildTextField()),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16, right: 32),
+                            child: Text(
+                              '',
+                              style: TextStyle(color: Colors.grey),
                             ),
                           ),
                         ),

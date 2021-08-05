@@ -28,10 +28,9 @@ class MyApp extends StatelessWidget {
             '/list': (context) => Listagem(),
           },
           title: "",
-          theme: ThemeData(
-            primaryColor: Colors.green,
-            accentColor: Colors.green,
-          ),
+          theme: new ThemeData(
+              primaryColor: Color.fromRGBO(58, 66, 86, 1.0),
+              fontFamily: 'Raleway'),
           debugShowCheckedModeBanner: false,
         );
       }),

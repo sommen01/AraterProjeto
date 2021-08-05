@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
       key: _scaffoldKey,
       body: SingleChildScrollView(
         child: Container(
@@ -38,11 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 2.5,
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.green, Colors.green.shade400],
-                    ),
+                    color: Color.fromRGBO(58, 66, 86, 1.0),
                     borderRadius:
                         BorderRadius.only(bottomLeft: Radius.circular(90))),
                 child: Column(
@@ -176,9 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                             height: 45,
                             width: MediaQuery.of(context).size.width / 1.2,
                             decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.green, Colors.green.shade300],
-                                ),
+                                color: Colors.green,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50))),
                             child: Center(
