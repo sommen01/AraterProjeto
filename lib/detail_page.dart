@@ -35,12 +35,17 @@ class DetailPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Padding(
                     padding: EdgeInsets.all(5),
-                    child: Container(
-                        decoration: new BoxDecoration(
-                            image: new DecorationImage(
-                                image: new NetworkImage(item['image'][index]),
-                                scale: 80.0,
-                                fit: BoxFit.cover))));
+                    child: Column(
+                      children: [
+                        Container(
+                            decoration: new BoxDecoration(
+                                image: new DecorationImage(
+                                    image:
+                                        new NetworkImage(item['image'][index]),
+                                    scale: 80.0,
+                                    fit: BoxFit.cover))),
+                      ],
+                    ));
               }),
         ),
       ],
@@ -53,7 +58,7 @@ class DetailPage extends StatelessWidget {
         children: <Widget>[
           Container(
             width: double.infinity,
-            child: new Divider(color: Colors.green),
+            child: new Divider(color: Color.fromRGBO(58, 66, 86, 1.0)),
           ),
           SizedBox(height: 10.0),
           Text(

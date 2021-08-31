@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:ifms_form/models/os_model.dart';
 import 'package:ifms_form/user_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -27,7 +28,7 @@ class _FormularioState extends State<Formulario> {
   double val = 0;
   Future<String> url;
 
-  List<File> _image = List<File>();
+  File _image;
   final picker = ImagePicker();
   Position _currentPosition;
   String _currentAddress;
@@ -38,11 +39,14 @@ class _FormularioState extends State<Formulario> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _numberCalled = TextEditingController();
   final __description = TextEditingController();
-  List<String> urlList = [];
+  String urls;
+  List<OsModel> osModelList = List<OsModel>();
+  bool isfinal = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
       key: _scaffoldKey,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -81,180 +85,217 @@ class _FormularioState extends State<Formulario> {
                 children: <Widget>[
                   Container(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height / 2.5,
+                    height: MediaQuery.of(context).size.height * 0.47,
                     decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.green, Colors.green.shade400],
-                        ),
+                        color: Color.fromRGBO(58, 66, 86, 1.0),
                         borderRadius:
                             BorderRadius.only(bottomLeft: Radius.circular(90))),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Spacer(),
                         Align(
                           alignment: Alignment.center,
-                          child: GestureDetector(
-                            onTap: () {
-                              cameraImage();
-
-                              print(_currentAddress);
-                              print(_currentPosition);
-                            },
-                            child: Column(
-                              children: [
-                                displaySelectedFile(_image),
-                                Icon(
-                                  Icons.photo_camera_outlined,
-                                  size: 40,
-                                  color: Colors.white,
+                          child: Column(
+                            children: [
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.27,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: displaySelectedFile(_image),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 10, right: 32),
-                            child: Text(
-                              'FORMULÁRIO DE DADOS',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 22),
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.60,
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.only(top: 30),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          height: 45,
-                          padding: EdgeInsets.only(
-                              top: 4, left: 16, right: 16, bottom: 4),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(color: Colors.black12, blurRadius: 5)
-                              ]),
-                          child: TextField(
-                              controller: _numberCalled,
+
+                  Form(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: ListView(
+                        padding: EdgeInsets.all(16),
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.photo_camera_outlined,
+                              size: 40,
+                            ),
+                            onPressed: () {
+                              cameraImage();
+                              print('foda');
+                            },
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: 45,
+                            padding: EdgeInsets.only(
+                                top: 4, left: 16, right: 16, bottom: 4),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50)),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12, blurRadius: 5)
+                                ]),
+                            child: TextField(
+                                controller: _numberCalled,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  icon: Icon(
+                                    Icons.format_list_numbered,
+                                    color: Colors.grey,
+                                  ),
+                                  hintText: 'Número do Chamado',
+                                )),
+                          ),
+                          SizedBox(
+                            height: 16,
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 1,
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            padding: EdgeInsets.only(
+                                top: 4, left: 16, right: 16, bottom: 4),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50)),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12, blurRadius: 5)
+                                ]),
+                            child: TextField(
+                              controller: __description,
+                              maxLines: null,
+                              expands: true,
+                              keyboardType: TextInputType.multiline,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 icon: Icon(
-                                  Icons.format_list_numbered,
+                                  Icons.text_fields,
                                   color: Colors.grey,
                                 ),
-                                hintText: 'Número do Chamado',
-                              )),
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.025,
-                        ),
-
-                        Container(
-                          width: MediaQuery.of(context).size.width / 1,
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          padding: EdgeInsets.only(
-                              top: 4, left: 16, right: 16, bottom: 4),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(color: Colors.black12, blurRadius: 5)
-                              ]),
-                          child: TextField(
-                            controller: __description,
-                            maxLines: null,
-                            expands: true,
-                            keyboardType: TextInputType.multiline,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              icon: Icon(
-                                Icons.text_fields,
-                                color: Colors.grey,
+                                hintText: 'Descrição',
                               ),
-                              hintText: 'Descrição',
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.025,
-                        ),
-
-                        GestureDetector(
-                          onTap: () async {
-                            if (urlList == null || urlList.length == 0) {
-                              await uploadFile();
-                            } else {
-                              if (time == null ||
-                                  date == null ||
-                                  _currentPosition == null) {
-                                _getDateNow();
-                                _getCurrentLocation();
+                          SizedBox(
+                            height: 16,
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              if (url == null) {
+                                await uploadFile();
                               }
+                              addOsObject(
+                                  model.userData["name"],
+                                  await url,
+                                  _currentPosition.toString(),
+                                  time,
+                                  date,
+                                  __description.text,
+                                  _numberCalled.text);
 
-                              formData = {
-                                "name": await model.userData["name"],
-                                "image": await urlList,
-                                "coordinates":
-                                    await _currentPosition.toString(),
-                                "time": time,
-                                "date": date,
-                                "description": __description.text,
-                                "numberCalled": _numberCalled.text,
-                              };
-                              model.saveCalled(
-                                  formData: formData,
-                                  onSuccess: _onSuccess,
-                                  onFail: _onFail);
-                            }
-                          },
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.08,
-                            width: MediaQuery.of(context).size.width / 1.2,
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.green, Colors.green[400]],
+                              showAlertDialog(context);
+                              if (isfinal == true) {
+                                model.saveCalled(
+                                    formData: osModelList,
+                                    onSuccess: _onSuccess,
+                                    onFail: _onFail);
+                              }
+                            },
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              width: MediaQuery.of(context).size.width / 1.2,
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Colors.green, Colors.green[400]],
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50))),
+                              child: Center(
+                                child: Text(
+                                  'Enviar'.toUpperCase(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50))),
-                            child: Center(
-                              child: Text(
-                                'Enviar'.toUpperCase(),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                        ),
-                        // Container(child: _buildTextField()),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16, right: 32),
-                            child: Text(
-                              '',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  )
+                  ),
+                  // Visibility(
+                  //   visible: false,
+                  //   child: Container(
+                  //     height: MediaQuery.of(context).size.height * 0.60,
+                  //     width: MediaQuery.of(context).size.width,
+                  //     padding: EdgeInsets.only(top: 30),
+                  //     child: Column(
+                  //       children: <Widget>[
+                  //
+                  //         SizedBox(
+                  //           height: MediaQuery.of(context).size.height * 0.025,
+                  //         ),
+
+                  //         Container(
+                  //           width: MediaQuery.of(context).size.width / 1,
+                  //           height: MediaQuery.of(context).size.height * 0.3,
+                  //           padding: EdgeInsets.only(
+                  //               top: 4, left: 16, right: 16, bottom: 4),
+                  //           decoration: BoxDecoration(
+                  //               borderRadius:
+                  //                   BorderRadius.all(Radius.circular(50)),
+                  //               color: Colors.white,
+                  //               boxShadow: [
+                  //                 BoxShadow(
+                  //                     color: Colors.black12, blurRadius: 5)
+                  //               ]),
+                  //           child: TextField(
+                  //             controller: __description,
+                  //             maxLines: null,
+                  //             expands: true,
+                  //             keyboardType: TextInputType.multiline,
+                  //             decoration: InputDecoration(
+                  //               border: InputBorder.none,
+                  //               icon: Icon(
+                  //                 Icons.text_fields,
+                  //                 color: Colors.grey,
+                  //               ),
+                  //               hintText: 'Descrição',
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         SizedBox(
+                  //           height: MediaQuery.of(context).size.height * 0.025,
+                  //         ),
+
+                  //         // Container(child: _buildTextField()),
+                  //         Align(
+                  //           alignment: Alignment.centerRight,
+                  //           child: Padding(
+                  //             padding:
+                  //                 const EdgeInsets.only(top: 16, right: 32),
+                  //             child: Text(
+                  //               '',
+                  //               style: TextStyle(color: Colors.grey),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // )
                 ],
               ),
             ),
@@ -275,8 +316,8 @@ class _FormularioState extends State<Formulario> {
     __description.clear();
     time = null;
     _currentPosition = null;
-    _image = [];
-    urlList = [];
+    _image = null;
+    url = null;
   }
 
   void _onFail() {
@@ -285,6 +326,15 @@ class _FormularioState extends State<Formulario> {
       backgroundColor: Colors.redAccent,
       duration: Duration(seconds: 2),
     ));
+  }
+
+  addOsObject(String name, String url, String _curret, String time, String date,
+      String des, String number) async {
+    var x = new OsModel(await name, await url, await _curret.toString(), time,
+        date, des, number);
+    print(x);
+    osModelList.add(x);
+    print(osModelList);
   }
 
   _getDateNow() {
@@ -326,27 +376,22 @@ class _FormularioState extends State<Formulario> {
 
   uploadFile() async {
     var url;
-    for (int i = 0; i < _image.length; i++) {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref =
-          storage.ref().child(DateTime.now().millisecond.toString());
-      UploadTask uploadTask = ref.putFile(_image[i]);
-      uploadTask.whenComplete(() async {
-        try {
-          url = await ref.getDownloadURL();
-          await urlList.add(url.toString());
-          i++;
-          print(urlList);
-        } catch (onError) {
-          print("Error");
-        }
-      });
-    }
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child(DateTime.now().millisecond.toString());
+    UploadTask uploadTask = ref.putFile(_image);
+    uploadTask.whenComplete(() async {
+      try {
+        url = await ref.getDownloadURL();
+        print(url);
+      } catch (onError) {
+        print("Error");
+      }
+    });
 
-    return urlList;
+    return url;
   }
 
-  Widget displaySelectedFile(List<File> file) {
+  Widget displaySelectedFile(File file) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.25,
       width: MediaQuery.of(context).size.width * 1.0,
@@ -364,31 +409,20 @@ class _FormularioState extends State<Formulario> {
           : Container(
               width: double.infinity,
               height: 200,
-              child: new ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _image.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onLongPress: () {
-                        setState(() {
-                          _image.removeAt(index);
-                        });
-                      },
-                      child: Container(
-                          width: 300.0,
-                          height: 300.0,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0) //
-                                      ),
-                              image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: FileImage(file[index])))),
-                    ),
-                  );
+              child: GestureDetector(
+                onLongPress: () {
+                  setState(() {
+                    _image = null;
+                  });
                 },
+                child: Container(
+                    width: MediaQuery.of(context).size.height * 0.25,
+                    height: MediaQuery.of(context).size.width * 1.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0) //
+                            ),
+                        image: DecorationImage(
+                            fit: BoxFit.fill, image: FileImage(file)))),
               ),
             ),
     );
@@ -405,7 +439,7 @@ class _FormularioState extends State<Formulario> {
       return;
     } else {
       setState(() {
-        _image.add(File(pickedFile?.path));
+        _image = File(pickedFile?.path);
       });
       if (pickedFile.path == null) retrieveLostData();
     }
@@ -418,7 +452,7 @@ class _FormularioState extends State<Formulario> {
     }
     if (response.file != null) {
       setState(() {
-        _image.add(File(response.file.path));
+        // _image.add(File(response.file.path));
       });
     } else {
       print(response.file);
@@ -450,6 +484,41 @@ class _FormularioState extends State<Formulario> {
           filled: true,
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Finalizar"),
+      onPressed: () {
+        isfinal = !isfinal;
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Continuar"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text("Finalizar OS?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

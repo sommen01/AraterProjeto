@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ifms_form/models/os_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter/material.dart';
 
@@ -108,23 +109,28 @@ class UserModel extends Model {
   }
 
   Future saveCalled(
-      {Map<String, dynamic> formData,
+      {List<OsModel> formData,
       VoidCallback onSuccess,
       VoidCallback onFail}) async {
-    print(formData["coordinates"]);
     isLoading = true;
     notifyListeners();
     try {
-      await FirebaseFirestore.instance
-          .collection("called")
-          .doc(formData["numberCalled"])
-          .set(formData);
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(firebaseUser.uid)
-          .collection("called")
-          .doc(formData["numberCalled"])
-          .set(formData);
+      print('entrei');
+      print(formData);
+      for (var i = 0; i > formData.length; i++) {
+        await FirebaseFirestore.instance
+            .collection("called")
+            .doc(formData[i].numberCalled)
+            .set(formData[i] as Map<String, dynamic>);
+
+        print(formData[i].numberCalled);
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(firebaseUser.uid)
+            .collection("called")
+            .doc(formData[i].numberCalled)
+            .set(formData[i] as Map<String, dynamic>);
+      }
 
       onSuccess();
       isLoading = false;
